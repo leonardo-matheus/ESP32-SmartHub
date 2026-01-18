@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 IPTV Server - Documentação | ESP32-SmartHub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📺</text></svg>">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .back-link:hover { opacity: 1; }
+
+        main { padding: 40px 0; }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        h2 { color: var(--dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
+        h3 { color: var(--dark); margin: 20px 0 10px; }
+        
+        .code-block {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .tag { color: #f472b6; }
+        .code-block .attr { color: #fbbf24; }
+        .code-block .value { color: #a5f3fc; }
+        
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { background: var(--light); font-weight: 600; }
+        
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background: #dcfce7;
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        footer a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Voltar para Home</a>
+            <h1>📺 ESP32 IPTV Server</h1>
+            <p>Servidor de playlists M3U8 para dispositivos IPTV</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="card">
+                <h2>📋 Visão Geral</h2>
+                <p>O ESP32 IPTV Server transforma seu ESP32 em um servidor de playlists IPTV, permitindo gerenciar e servir listas M3U8 para dispositivos como Smart TVs, set-top boxes e aplicativos de IPTV.</p>
+                
+                <h3>Funcionalidades</h3>
+                <ul>
+                    <li>Servidor HTTP para playlists M3U8</li>
+                    <li>Parser de playlists com suporte a metadados</li>
+                    <li>Interface web para gerenciamento</li>
+                    <li>Armazenamento em memória flash (SPIFFS)</li>
+                    <li>Suporte a múltiplas playlists</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📁 Estrutura do Projeto</h2>
+                <div class="code-block">
+ESP32_IPTV_Server/
+├── src/
+│   ├── main.cpp              <span class="comment"># Ponto de entrada</span>
+│   ├── config.h              <span class="comment"># Configurações</span>
+│   ├── playlist_parser.cpp   <span class="comment"># Parser M3U8</span>
+│   ├── playlist_parser.h
+│   ├── storage_manager.cpp   <span class="comment"># Gerenciador SPIFFS</span>
+│   ├── storage_manager.h
+│   ├── web_server.cpp        <span class="comment"># Servidor HTTP</span>
+│   ├── web_server.h
+│   ├── wifi_manager.cpp      <span class="comment"># Gerenciador WiFi</span>
+│   └── wifi_manager.h
+└── platformio.ini            <span class="comment"># Configuração PlatformIO</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📄 Formato M3U8</h2>
+                <p>O servidor suporta playlists no formato M3U8 Extended:</p>
+                
+                <div class="code-block">
+<span class="tag">#EXTM3U</span>
+<span class="tag">#EXTINF:</span><span class="value">-1</span> <span class="attr">tvg-id</span>=<span class="value">"globo"</span> <span class="attr">tvg-name</span>=<span class="value">"Globo HD"</span> <span class="attr">tvg-logo</span>=<span class="value">"http://..."</span> <span class="attr">group-title</span>=<span class="value">"Abertos"</span>,Globo HD
+http://servidor.com/stream/globo
+
+<span class="tag">#EXTINF:</span><span class="value">-1</span> <span class="attr">tvg-id</span>=<span class="value">"sbt"</span> <span class="attr">tvg-name</span>=<span class="value">"SBT HD"</span> <span class="attr">group-title</span>=<span class="value">"Abertos"</span>,SBT HD
+http://servidor.com/stream/sbt
+                </div>
+                
+                <h3>Atributos Suportados</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Atributo</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>tvg-id</code></td>
+                            <td>Identificador único do canal</td>
+                        </tr>
+                        <tr>
+                            <td><code>tvg-name</code></td>
+                            <td>Nome de exibição do canal</td>
+                        </tr>
+                        <tr>
+                            <td><code>tvg-logo</code></td>
+                            <td>URL do logo do canal</td>
+                        </tr>
+                        <tr>
+                            <td><code>group-title</code></td>
+                            <td>Categoria/grupo do canal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🚀 Instalação</h2>
+                
+                <h3>1. Configurar WiFi</h3>
+                <p>Edite <code>src/config.h</code>:</p>
+                <div class="code-block">
+<span class="comment">// Rede WiFi</span>
+#define WIFI_SSID "SuaRede"
+#define WIFI_PASSWORD "SuaSenha"
+                </div>
+
+                <h3>2. Compilar e Upload</h3>
+                <div class="code-block">
+<span class="comment"># Compilar</span>
+pio run -d ESP32_IPTV_Server
+
+<span class="comment"># Upload firmware</span>
+pio run -d ESP32_IPTV_Server --target upload
+
+<span class="comment"># Upload filesystem (playlists)</span>
+pio run -d ESP32_IPTV_Server --target uploadfs
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🌐 API Endpoints</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Método</th>
+                            <th>Endpoint</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td><code>/</code></td>
+                            <td>Interface web principal</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td><code>/playlist.m3u8</code></td>
+                            <td>Baixar playlist completa</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td><code>/api/channels</code></td>
+                            <td>Lista de canais em JSON</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td><code>/api/groups</code></td>
+                            <td>Lista de categorias</td>
+                        </tr>
+                        <tr>
+                            <td><code>POST</code></td>
+                            <td><code>/api/upload</code></td>
+                            <td>Upload de nova playlist</td>
+                        </tr>
+                        <tr>
+                            <td><code>GET</code></td>
+                            <td><code>/api/status</code></td>
+                            <td>Status do servidor</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>📱 Uso com Players IPTV</h2>
+                
+                <h3>VLC Media Player</h3>
+                <div class="code-block">
+<span class="comment"># Abrir stream via linha de comando</span>
+vlc http://192.168.1.100/playlist.m3u8
+
+<span class="comment"># Ou via menu: Media > Open Network Stream</span>
+                </div>
+
+                <h3>Smart TV / Set-top Box</h3>
+                <ol>
+                    <li>Instale um app IPTV (ex: IPTV Smarters, TiviMate)</li>
+                    <li>Adicione playlist via URL: <code>http://IP_DO_ESP32/playlist.m3u8</code></li>
+                    <li>Aguarde a sincronização</li>
+                </ol>
+
+                <div class="info">
+                    <strong>Dica:</strong> Descubra o IP do ESP32 no Serial Monitor após a conexão WiFi.
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💾 Gerenciamento de Storage</h2>
+                
+                <h3>SPIFFS</h3>
+                <p>O ESP32 usa SPIFFS (SPI Flash File System) para armazenar playlists. Capacidade típica: 1-3 MB dependendo da partição.</p>
+                
+                <div class="code-block">
+<span class="comment"># Estrutura de arquivos no SPIFFS</span>
+/
+├── playlist.m3u8      <span class="comment"># Playlist principal</span>
+├── channels.json      <span class="comment"># Cache de canais</span>
+└── config.json        <span class="comment"># Configurações</span>
+                </div>
+
+                <h3>Limites</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tamanho máximo playlist</strong></td>
+                            <td>~500KB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Máximo de canais</strong></td>
+                            <td>~1000 (depende da memória)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Formato suportado</strong></td>
+                            <td>M3U, M3U8 (UTF-8)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Módulos do Projeto</h2>
+                
+                <h3>playlist_parser</h3>
+                <p>Responsável por fazer o parsing de arquivos M3U8:</p>
+                <ul>
+                    <li>Extrai metadados (#EXTINF)</li>
+                    <li>Agrupa canais por categoria</li>
+                    <li>Valida URLs de stream</li>
+                </ul>
+
+                <h3>storage_manager</h3>
+                <p>Gerencia o sistema de arquivos SPIFFS:</p>
+                <ul>
+                    <li>Inicialização e formatação</li>
+                    <li>Leitura/escrita de arquivos</li>
+                    <li>Monitoramento de espaço</li>
+                </ul>
+
+                <h3>web_server</h3>
+                <p>Servidor HTTP com rotas REST:</p>
+                <ul>
+                    <li>Serve playlists para clientes</li>
+                    <li>API JSON para gerenciamento</li>
+                    <li>Interface web responsiva</li>
+                </ul>
+
+                <h3>wifi_manager</h3>
+                <p>Gerencia conectividade WiFi:</p>
+                <ul>
+                    <li>Conexão automática</li>
+                    <li>Reconexão em caso de falha</li>
+                    <li>Modo AP para configuração inicial</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>⚠️ Considerações</h2>
+                
+                <div class="warning">
+                    <strong>Uso de Memória:</strong> Playlists muito grandes podem exceder a memória RAM do ESP32. Considere dividir em múltiplos arquivos ou usar paginação.
+                </div>
+                
+                <div class="warning">
+                    <strong>Streaming:</strong> O ESP32 NÃO faz proxy dos streams de vídeo - apenas serve a playlist. Os dispositivos clientes conectam diretamente aos servidores de stream.
+                </div>
+                
+                <div class="success">
+                    <strong>Vantagem:</strong> Por não intermediar o vídeo, o ESP32 pode servir dezenas de clientes simultaneamente sem impacto na qualidade.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            <a href="https://github.com/leonardo-matheus/ESP32-SmartHub">ESP32-SmartHub</a> •
+            <a href="esp32_nat_router.html">ESP32 NAT Router</a> •
+            <a href="esp32_wifi_gateway.html">ESP32 WiFi Gateway</a>
+        </p>
+    </footer>
+</body>
+</html>

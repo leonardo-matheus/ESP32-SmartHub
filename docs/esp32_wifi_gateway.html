@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 WiFi Gateway - Documentação | ESP32-SmartHub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .back-link:hover { opacity: 1; }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+
+        main { padding: 40px 0; }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        h2 { color: var(--dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
+        h3 { color: var(--dark); margin: 20px 0 10px; }
+        
+        .code-block {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #a5f3fc; }
+        .code-block .define { color: #fbbf24; }
+        
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { background: var(--light); font-weight: 600; }
+        
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background: #dcfce7;
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        footer a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Voltar para Home</a>
+            <h1>🌐 ESP32 WiFi Gateway</h1>
+            <p>Gateway WiFi dual-band com servidor web integrado</p>
+            <span class="badge">⚠️ Projeto de Referência - Sem suporte NAT nativo</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="card">
+                <h2>📋 Visão Geral</h2>
+                <p>O ESP32 WiFi Gateway é um projeto baseado no Arduino Framework que cria um Access Point secundário conectado à sua rede principal. Inclui servidor web para monitoramento e gerenciamento.</p>
+                
+                <div class="warning">
+                    <strong>⚠️ Limitação Importante:</strong> O Arduino-ESP32 SDK padrão não inclui suporte a NAPT (NAT) compilado. Para funcionalidade completa de roteamento, utilize o <a href="esp32_nat_router.html">ESP32 NAT Router</a>.
+                </div>
+                
+                <h3>Funcionalidades</h3>
+                <ul>
+                    <li>Dual-mode WiFi (Station + Access Point)</li>
+                    <li>Servidor web para configuração</li>
+                    <li>Interface de diagnóstico</li>
+                    <li>Código modular e extensível</li>
+                    <li>Compatível com PlatformIO</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📁 Estrutura do Projeto</h2>
+                <div class="code-block">
+ESP32_WiFi_Gateway/
+├── src/
+│   ├── main.cpp           <span class="comment"># Ponto de entrada</span>
+│   ├── config.h           <span class="comment"># Configurações de rede</span>
+│   ├── wifi_manager.cpp   <span class="comment"># Gerenciamento WiFi</span>
+│   ├── wifi_manager.h
+│   ├── web_server.cpp     <span class="comment"># Servidor HTTP</span>
+│   └── web_server.h
+└── platformio.ini         <span class="comment"># Configuração PlatformIO</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ Configuração</h2>
+                <p>Edite o arquivo <code>src/config.h</code> com suas configurações:</p>
+                
+                <div class="code-block">
+<span class="comment">// Rede principal (sua casa)</span>
+<span class="define">#define</span> <span class="keyword">WIFI_STA_SSID</span>     <span class="string">"HOME"</span>
+<span class="define">#define</span> <span class="keyword">WIFI_STA_PASSWORD</span> <span class="string">"sua_senha"</span>
+
+<span class="comment">// Access Point para dispositivos IoT</span>
+<span class="define">#define</span> <span class="keyword">WIFI_AP_SSID</span>      <span class="string">"SmartThings"</span>
+<span class="define">#define</span> <span class="keyword">WIFI_AP_PASSWORD</span>  <span class="string">"smart12345"</span>
+<span class="define">#define</span> <span class="keyword">WIFI_AP_CHANNEL</span>   <span class="string">6</span>
+<span class="define">#define</span> <span class="keyword">WIFI_AP_MAX_CONNECTIONS</span> <span class="string">8</span>
+
+<span class="comment">// Configuração de IP</span>
+<span class="define">#define</span> <span class="keyword">AP_LOCAL_IP</span>  IPAddress(192, 168, 4, 1)
+<span class="define">#define</span> <span class="keyword">AP_GATEWAY</span>   IPAddress(192, 168, 4, 1)
+<span class="define">#define</span> <span class="keyword">AP_SUBNET</span>    IPAddress(255, 255, 255, 0)
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🚀 Compilação e Upload</h2>
+                
+                <h3>Requisitos</h3>
+                <ul>
+                    <li>Python 3.x</li>
+                    <li>PlatformIO Core ou VS Code com extensão PlatformIO</li>
+                    <li>Driver CP210x (pasta <code>driver/</code>)</li>
+                </ul>
+
+                <h3>Via Terminal</h3>
+                <div class="code-block">
+<span class="comment"># Instalar PlatformIO (se necessário)</span>
+pip install platformio
+
+<span class="comment"># Compilar</span>
+pio run -d ESP32_WiFi_Gateway
+
+<span class="comment"># Upload para ESP32</span>
+pio run -d ESP32_WiFi_Gateway --target upload --upload-port COM6
+                </div>
+
+                <h3>Via VS Code</h3>
+                <ol>
+                    <li>Abra a pasta <code>ESP32_WiFi_Gateway</code> no VS Code</li>
+                    <li>Clique no ícone do PlatformIO na barra lateral</li>
+                    <li>Selecione "Upload" em Project Tasks</li>
+                </ol>
+            </div>
+
+            <div class="card">
+                <h2>🌐 Servidor Web</h2>
+                <p>Após o upload, acesse a interface web:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>http://192.168.4.1/</code></td>
+                            <td>Página principal com status</td>
+                        </tr>
+                        <tr>
+                            <td><code>http://192.168.4.1/status</code></td>
+                            <td>Status detalhado em JSON</td>
+                        </tr>
+                        <tr>
+                            <td><code>http://192.168.4.1/scan</code></td>
+                            <td>Scan de redes WiFi disponíveis</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>📊 Arquitetura</h2>
+                <div class="code-block" style="text-align: center;">
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Rede HOME     │────▶│   ESP32 WiFi    │◀────│  Dispositivos   │
+│  (192.168.1.x)  │     │    Gateway      │     │   SmartThings   │
+└─────────────────┘     │                 │     │  (192.168.4.x)  │
+                        │  STA ◀──▶ AP    │     └─────────────────┘
+                        │                 │
+                        │  Web Server :80 │
+                        └─────────────────┘
+                </div>
+                
+                <div class="error">
+                    <strong>❌ Sem NAT:</strong> Os dispositivos na rede SmartThings NÃO conseguem acessar a internet através do ESP32 nesta configuração. Use o <a href="esp32_nat_router.html">ESP32 NAT Router</a> para isso.
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔧 Extensibilidade</h2>
+                <p>O projeto foi desenvolvido com arquitetura modular para fácil extensão:</p>
+                
+                <h3>Adicionar novo endpoint web</h3>
+                <div class="code-block">
+<span class="comment">// Em web_server.cpp</span>
+server.on(<span class="string">"/meu-endpoint"</span>, HTTP_GET, []() {
+    server.send(200, <span class="string">"text/plain"</span>, <span class="string">"Hello!"</span>);
+});
+                </div>
+
+                <h3>Módulos disponíveis</h3>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><code>wifi_manager</code></td>
+                            <td>Gerenciamento de conexão WiFi STA/AP</td>
+                        </tr>
+                        <tr>
+                            <td><code>web_server</code></td>
+                            <td>Servidor HTTP com rotas configuráveis</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>💡 Quando usar este projeto?</h2>
+                
+                <div class="success">
+                    <strong>✅ Use ESP32 WiFi Gateway quando:</strong>
+                    <ul style="margin-top: 10px; margin-bottom: 0;">
+                        <li>Precisa apenas de um Access Point secundário</li>
+                        <li>Quer desenvolver funcionalidades customizadas</li>
+                        <li>Precisa de servidor web para monitoramento</li>
+                        <li>Está aprendendo desenvolvimento ESP32</li>
+                    </ul>
+                </div>
+                
+                <div class="info">
+                    <strong>🔄 Use ESP32 NAT Router quando:</strong>
+                    <ul style="margin-top: 10px; margin-bottom: 0;">
+                        <li>Dispositivos precisam acessar internet</li>
+                        <li>Precisa de isolamento real de rede</li>
+                        <li>Quer usar como repetidor WiFi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            <a href="https://github.com/leonardo-matheus/ESP32-SmartHub">ESP32-SmartHub</a> •
+            <a href="esp32_nat_router.html">ESP32 NAT Router</a> •
+            <a href="esp32_iptv_server.html">ESP32 IPTV Server</a>
+        </p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProxyMedia - ESP32 Smart Home Network</title>
+    <meta name="description" content="Coleção de projetos ESP32 para gerenciamento de rede doméstica inteligente">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        main {
+            background: var(--light);
+            padding: 60px 0;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .architecture h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+
+        .arch-diagram {
+            background: var(--dark);
+            color: #10b981;
+            padding: 30px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+
+        /* Projects Grid */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .project-card.featured {
+            border: 2px solid var(--secondary);
+        }
+
+        .project-header {
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .project-card.featured .project-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%);
+        }
+
+        .project-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .project-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .recommended-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .project-body {
+            padding: 25px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark);
+        }
+
+        .features-list li::before {
+            content: "✓";
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tech-tag {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .project-link {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .project-link.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .project-link.secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+        }
+
+        .project-link:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Quick Start */
+        .quick-start {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .quick-start h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .step h4 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .step p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .code-block {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .code-block .comment {
+            color: #64748b;
+        }
+
+        .code-block .command {
+            color: #10b981;
+        }
+
+        /* Configuration Section */
+        .config-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .config-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .config-card h4 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .config-item:last-child {
+            border-bottom: none;
+        }
+
+        .config-label {
+            color: var(--gray);
+        }
+
+        .config-value {
+            font-weight: 600;
+            color: var(--dark);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture, .quick-start, .config-section {
+                padding: 25px;
+            }
+
+            .arch-diagram {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <h1>🏠 ProxyMedia</h1>
+            <p>Coleção completa de projetos ESP32 para gerenciamento de rede doméstica inteligente, incluindo NAT Router, Gateway WiFi e Servidor IPTV.</p>
+            
+            <div class="badges">
+                <span class="badge">📡 ESP32</span>
+                <span class="badge">🔒 Rede Isolada</span>
+                <span class="badge">⚡ 15+ Mbps NAT</span>
+                <span class="badge">🌐 Interface Web</span>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="https://github.com/leonardo-matheus/ProxyMedia" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    Ver no GitHub
+                </a>
+                <a href="#projects" class="btn btn-secondary">
+                    Explorar Projetos
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Architecture -->
+            <section class="architecture">
+                <h2>🌐 Arquitetura de Rede</h2>
+                <div class="arch-diagram">
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              INTERNET                                        │
+└─────────────────────────────────┬───────────────────────────────────────────┘
+                                  │
+                    ┌─────────────▼─────────────┐
+                    │      Roteador HOME        │
+                    │      192.168.1.1          │
+                    └─────────────┬─────────────┘
+                                  │ WiFi (Rede Principal)
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+    ┌─────────▼─────────┐ ┌───────▼───────┐ ┌────────▼────────┐
+    │   Computadores    │ │   Celulares   │ │   ESP32 NAT     │
+    │   192.168.1.x     │ │  192.168.1.x  │ │   Router        │
+    └───────────────────┘ └───────────────┘ │  192.168.1.12   │
+                                            │                 │
+                                            │  ┌───────────┐  │
+                                            │  │ SmartThings│  │
+                                            │  │    AP     │  │
+                                            │  │192.168.4.1│  │
+                                            └──┴─────┬─────┴──┘
+                                                     │ WiFi (Rede IoT)
+                         ┌───────────────────────────┼───────────────────────────┐
+                         │                           │                           │
+               ┌─────────▼─────────┐       ┌─────────▼─────────┐       ┌─────────▼─────────┐
+               │   🔌 Tomada       │       │   💡 Lâmpada      │       │   🌡️ Sensor       │
+               │   Inteligente    │       │   Inteligente     │       │   Temperatura     │
+               │   192.168.4.x    │       │   192.168.4.x     │       │   192.168.4.x     │
+               └───────────────────┘       └───────────────────┘       └───────────────────┘
+                </div>
+            </section>
+
+            <!-- Projects -->
+            <section id="projects">
+                <div class="section-title">
+                    <h2>📦 Projetos</h2>
+                    <p>Três soluções completas para diferentes necessidades de rede</p>
+                </div>
+
+                <div class="projects-grid">
+                    <!-- ESP32 NAT Router -->
+                    <article class="project-card featured">
+                        <div class="project-header">
+                            <h3>
+                                ESP32 NAT Router
+                                <span class="recommended-badge">⭐ RECOMENDADO</span>
+                            </h3>
+                            <p>Firmware completo de roteador NAT com interface web</p>
+                        </div>
+                        <div class="project-body">
+                            <ul class="features-list">
+                                <li>NAT real com 15+ Mbps de throughput</li>
+                                <li>Interface web moderna para configuração</li>
+                                <li>DHCP server com reservas de IP</li>
+                                <li>Port forwarding configurável</li>
+                                <li>Suporte a WPA2-Enterprise</li>
+                                <li>Firmware pré-compilado (pronto para usar)</li>
+                            </ul>
+                            <div class="tech-tags">
+                                <span class="tech-tag">ESP-IDF</span>
+                                <span class="tech-tag">NAPT</span>
+                                <span class="tech-tag">C</span>
+                                <span class="tech-tag">lwIP</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/leonardo-matheus/ProxyMedia/tree/master/esp32_nat_router" class="project-link primary">Ver Código</a>
+                                <a href="esp32_nat_router.html" class="project-link secondary">Documentação</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ESP32 WiFi Gateway -->
+                    <article class="project-card">
+                        <div class="project-header">
+                            <h3>ESP32 WiFi Gateway</h3>
+                            <p>Gateway personalizado para isolamento de rede IoT</p>
+                        </div>
+                        <div class="project-body">
+                            <ul class="features-list">
+                                <li>Modo AP+STA simultâneo</li>
+                                <li>Interface web para monitoramento</li>
+                                <li>Código fonte aberto e customizável</li>
+                                <li>Desenvolvido com PlatformIO</li>
+                                <li>Base para projetos personalizados</li>
+                            </ul>
+                            <div class="tech-tags">
+                                <span class="tech-tag">Arduino</span>
+                                <span class="tech-tag">PlatformIO</span>
+                                <span class="tech-tag">C++</span>
+                                <span class="tech-tag">WebServer</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/leonardo-matheus/ProxyMedia/tree/master/ESP32_WiFi_Gateway" class="project-link primary">Ver Código</a>
+                                <a href="esp32_wifi_gateway.html" class="project-link secondary">Documentação</a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ESP32 IPTV Server -->
+                    <article class="project-card">
+                        <div class="project-header">
+                            <h3>ESP32 IPTV Server</h3>
+                            <p>Servidor IPTV embarcado para playlists M3U8</p>
+                        </div>
+                        <div class="project-body">
+                            <ul class="features-list">
+                                <li>Gerenciamento de playlists M3U/M3U8</li>
+                                <li>Interface web responsiva</li>
+                                <li>API REST para integração</li>
+                                <li>Armazenamento em LittleFS</li>
+                                <li>Compatível com VLC e Kodi</li>
+                            </ul>
+                            <div class="tech-tags">
+                                <span class="tech-tag">Arduino</span>
+                                <span class="tech-tag">LittleFS</span>
+                                <span class="tech-tag">JSON API</span>
+                                <span class="tech-tag">M3U8</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/leonardo-matheus/ProxyMedia/tree/master/ESP32_IPTV_Server" class="project-link primary">Ver Código</a>
+                                <a href="esp32_iptv_server.html" class="project-link secondary">Documentação</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Quick Start -->
+            <section class="quick-start">
+                <h2>🚀 Início Rápido</h2>
+                
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Instalar Driver</h4>
+                        <p>Instale o driver CP210x da pasta <code>driver/</code> para comunicação USB com o ESP32.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Gravar Firmware</h4>
+                        <p>Use o esptool.py para gravar o firmware pré-compilado no ESP32.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Configurar WiFi</h4>
+                        <p>Conecte à rede "ESP32_NAT_Router" e acesse 192.168.4.1 para configurar.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Conectar Dispositivos</h4>
+                        <p>Conecte seus dispositivos IoT à nova rede criada.</p>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<span class="comment"># Gravar firmware ESP32 NAT Router</span>
+<span class="command">esptool.py</span> --chip esp32 --port COM6 write_flash -z \
+  0x1000 firmware_esp32/bootloader.bin \
+  0x8000 firmware_esp32/partition-table.bin \
+  0x10000 firmware_esp32/esp32_nat_router.bin
+
+<span class="comment"># Configurar via serial</span>
+<span class="command">set_sta</span> NOME_DA_SUA_REDE SENHA_DA_REDE
+<span class="command">set_ap</span> SmartThings smart12345
+<span class="command">restart</span>
+                </div>
+            </section>
+
+            <!-- Current Config -->
+            <section class="config-section">
+                <h2>⚙️ Configuração Atual</h2>
+                
+                <div class="config-grid">
+                    <div class="config-card">
+                        <h4>📡 Rede Principal (Uplink)</h4>
+                        <div class="config-item">
+                            <span class="config-label">SSID</span>
+                            <span class="config-value">HOME</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">IP do ESP32</span>
+                            <span class="config-value">192.168.1.12</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Gateway</span>
+                            <span class="config-value">192.168.1.1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="config-card">
+                        <h4>🔒 Access Point (IoT)</h4>
+                        <div class="config-item">
+                            <span class="config-label">SSID</span>
+                            <span class="config-value">SmartThings</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Senha</span>
+                            <span class="config-value">smart12345</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">IP</span>
+                            <span class="config-value">192.168.4.1</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Interface Web</span>
+                            <span class="config-value">http://192.168.4.1</span>
+                        </div>
+                    </div>
+
+                    <div class="config-card">
+                        <h4>📊 Especificações</h4>
+                        <div class="config-item">
+                            <span class="config-label">Throughput NAT</span>
+                            <span class="config-value">15+ Mbps</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Max Clientes</span>
+                            <span class="config-value">8 dispositivos</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Canal WiFi</span>
+                            <span class="config-value">6</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/leonardo-matheus/ESP32-SmartHub">📦 Repositório</a>
+                <a href="https://github.com/leonardo-matheus/ESP32-SmartHub/issues">🐛 Reportar Bug</a>
+                <a href="https://github.com/martin-ger/esp32_nat_router">🔗 ESP32 NAT Router Original</a>
+            </div>
+            <p>Desenvolvido com ❤️ para a comunidade IoT</p>
+            <p style="margin-top: 10px; opacity: 0.7;">
+                <a href="https://github.com/leonardo-matheus">@leonardo-matheus</a> • 2026
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

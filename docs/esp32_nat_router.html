@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 NAT Router - Documentação | ProxyMedia</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📡</text></svg>">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+        }
+        header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        header p { opacity: 0.9; font-size: 1.1rem; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .back-link:hover { opacity: 1; }
+
+        main { padding: 40px 0; }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        h2 { color: var(--dark); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--primary); }
+        h3 { color: var(--dark); margin: 20px 0 10px; }
+        
+        .code-block {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 15px 0;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .command { color: #10b981; }
+        
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th { background: var(--light); font-weight: 600; }
+        
+        ul, ol { margin-left: 20px; margin-bottom: 15px; }
+        li { margin-bottom: 8px; }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        footer a { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="index.html" class="back-link">← Voltar para Home</a>
+            <h1>📡 ESP32 NAT Router</h1>
+            <p>Firmware completo de roteador WiFi NAT com interface web</p>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="card">
+                <h2>📋 Visão Geral</h2>
+                <p>O ESP32 NAT Router transforma seu ESP32 em um roteador WiFi completo com suporte a NAT (Network Address Translation), permitindo criar uma rede secundária com acesso à internet.</p>
+                
+                <h3>Casos de Uso</h3>
+                <ul>
+                    <li><strong>Extensor de alcance:</strong> Ampliar o sinal WiFi em áreas com sinal fraco</li>
+                    <li><strong>Rede para convidados:</strong> Criar uma rede separada com SSID/senha diferentes</li>
+                    <li><strong>Isolamento IoT:</strong> Separar dispositivos smart da rede principal</li>
+                    <li><strong>Converter WPA2-Enterprise:</strong> Transformar redes corporativas em WPA2-PSK</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🚀 Instalação</h2>
+                
+                <h3>Requisitos</h3>
+                <ul>
+                    <li>ESP32 (qualquer variante)</li>
+                    <li>Python 3.x com esptool instalado</li>
+                    <li>Driver CP210x instalado (pasta <code>driver/</code>)</li>
+                </ul>
+
+                <h3>Gravando o Firmware</h3>
+                <div class="code-block">
+<span class="comment"># Windows (PowerShell)</span>
+python esptool.py --chip esp32 --port COM6 --baud 921600 write_flash -z `
+  0x1000 firmware_esp32/bootloader.bin `
+  0x8000 firmware_esp32/partition-table.bin `
+  0x10000 firmware_esp32/esp32_nat_router.bin
+
+<span class="comment"># Linux/Mac</span>
+python esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 921600 write_flash -z \
+  0x1000 firmware_esp32/bootloader.bin \
+  0x8000 firmware_esp32/partition-table.bin \
+  0x10000 firmware_esp32/esp32_nat_router.bin
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚙️ Configuração</h2>
+                
+                <h3>Via Interface Web</h3>
+                <ol>
+                    <li>Conecte ao WiFi <code>ESP32_NAT_Router</code> (rede aberta)</li>
+                    <li>Acesse <code>http://192.168.4.1</code> no navegador</li>
+                    <li>Configure a rede principal (Uplink) na página de configuração</li>
+                    <li>Configure o Access Point com nome e senha desejados</li>
+                    <li>Clique em "Apply" e aguarde o reboot</li>
+                </ol>
+
+                <h3>Via Console Serial</h3>
+                <div class="code-block">
+<span class="comment"># Conectar a 115200 baud</span>
+
+<span class="comment"># Configurar rede principal</span>
+<span class="command">set_sta</span> NOME_REDE SENHA_REDE
+
+<span class="comment"># Configurar Access Point</span>
+<span class="command">set_ap</span> SmartThings smart12345
+
+<span class="comment"># Ver status</span>
+<span class="command">show</span> status
+
+<span class="comment"># Ver configuração</span>
+<span class="command">show</span> config
+
+<span class="comment"># Reiniciar</span>
+<span class="command">restart</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📚 Comandos Disponíveis</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>set_sta &lt;ssid&gt; &lt;pass&gt;</code></td>
+                            <td>Configura a rede WiFi principal (uplink)</td>
+                        </tr>
+                        <tr>
+                            <td><code>set_ap &lt;ssid&gt; &lt;pass&gt;</code></td>
+                            <td>Configura o Access Point</td>
+                        </tr>
+                        <tr>
+                            <td><code>set_ap_ip &lt;ip&gt;</code></td>
+                            <td>Define o IP do Access Point</td>
+                        </tr>
+                        <tr>
+                            <td><code>show status</code></td>
+                            <td>Mostra status da conexão</td>
+                        </tr>
+                        <tr>
+                            <td><code>show config</code></td>
+                            <td>Mostra configuração atual</td>
+                        </tr>
+                        <tr>
+                            <td><code>show mappings</code></td>
+                            <td>Mostra port forwarding e DHCP reservations</td>
+                        </tr>
+                        <tr>
+                            <td><code>portmap add &lt;proto&gt; &lt;ext_port&gt; &lt;int_ip&gt; &lt;int_port&gt;</code></td>
+                            <td>Adiciona port forwarding</td>
+                        </tr>
+                        <tr>
+                            <td><code>restart</code></td>
+                            <td>Reinicia o ESP32</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>🌐 Interface Web</h2>
+                <p>A interface web oferece três páginas principais:</p>
+                
+                <h3>/ - Status</h3>
+                <ul>
+                    <li>Status da conexão</li>
+                    <li>Uptime do sistema</li>
+                    <li>IPs e MACs das interfaces</li>
+                    <li>Bytes enviados/recebidos</li>
+                    <li>Clientes conectados</li>
+                </ul>
+
+                <h3>/config - Configuração</h3>
+                <ul>
+                    <li>Configurar Access Point (SSID, senha, IP)</li>
+                    <li>Configurar Uplink (SSID, senha)</li>
+                    <li>IP estático para STA</li>
+                    <li>WPA2-Enterprise</li>
+                </ul>
+
+                <h3>/mappings - Mapeamentos</h3>
+                <ul>
+                    <li>Lista de clientes conectados</li>
+                    <li>Reservas de DHCP</li>
+                    <li>Port forwarding</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📊 Especificações Técnicas</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td><strong>Throughput NAT</strong></td>
+                            <td>15+ Mbps</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Máximo de clientes</strong></td>
+                            <td>8 dispositivos simultâneos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Framework</strong></td>
+                            <td>ESP-IDF v5.5.2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Armazenamento</strong></td>
+                            <td>NVS (Non-Volatile Storage)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Protocolos</strong></td>
+                            <td>TCP, UDP, ICMP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>⚠️ Troubleshooting</h2>
+                
+                <div class="warning">
+                    <strong>ESP32 não conecta à rede principal</strong><br>
+                    Verifique se o SSID e senha estão corretos. Use <code>show config</code> para verificar as configurações salvas.
+                </div>
+
+                <div class="warning">
+                    <strong>Dispositivos não conseguem acessar internet</strong><br>
+                    Verifique se o NAT está habilitado com <code>show status</code>. Reinicie o ESP32 com <code>restart</code>.
+                </div>
+
+                <div class="info">
+                    <strong>Dica:</strong> Para resetar todas as configurações, use o comando <code>erase</code> e reinicie o ESP32.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>
+            <a href="https://github.com/leonardo-matheus/ESP32-SmartHub">ESP32-SmartHub</a> •
+            <a href="https://github.com/martin-ger/esp32_nat_router">Projeto Original</a>
+        </p>
+    </footer>
+</body>
+</html>
